@@ -53,7 +53,6 @@ class Scene:
     # 门所在墙在 walls 中的下标；door_points 为门端点（世界坐标）
     door_wall_index: Optional[int] = None
     door_points: Optional[List[Point]] = None
-    door_span: Optional[Tuple[float, float]] = None
 
 
 def _point_segment_distance(point: Point, a: Point, b: Point) -> float:
@@ -69,15 +68,6 @@ def _point_segment_distance(point: Point, a: Point, b: Point) -> float:
     t = max(0.0, min(1.0, t))
     cx, cy = ax + t * vx, ay + t * vy
     return math.hypot(px - cx, py - cy)
-
-
-def _wall_projection_span(wall: Wall, door: Sequence[Point]) -> Tuple[float, float]:
-    """门段两端点在墙方向上的投影范围 [start, end]。"""
-    ux, uy = wall.dx / wall.length, wall.dy / wall.length
-    spans = []
-    for point in door:
-        spans.append((point[0] - wall.p1[0]) * ux + (point[1] - wall.p1[1]) * uy)
-    return min(spans), max(spans)
 
 
 def _find_door_wall(walls: List[Wall], door: Sequence[Point], tol: float) -> Wall:
@@ -137,7 +127,6 @@ def build_scene(boundary: Sequence[Point], door: Sequence[Point],
     zone = _choose_inward_zone(polygon, ordered_door, door_width, tol)
     door_wall_index = walls.index(door_wall)
     door_points = [tuple(p) for p in door]
-    door_span = _wall_projection_span(door_wall, ordered_door)
     # 允许朝向：0/90 加上各斜墙方向角与其垂直方向（3 位小数去重）
     orientations = {0.0, 90.0}
     for wall in walls:
@@ -153,7 +142,6 @@ def build_scene(boundary: Sequence[Point], door: Sequence[Point],
         orientations_deg=sorted(orientations),
         door_wall_index=door_wall_index,
         door_points=door_points,
-        door_span=door_span,
     )
 
 
