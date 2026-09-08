@@ -1,0 +1,5 @@
+{
+  "feasible": false,
+  "placements": [],
+  "reason": "穷举所有候选摆放后未找到可行解"
+}
